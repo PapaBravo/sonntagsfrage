@@ -34,9 +34,9 @@ async function getPollsters() {
 
 function parseSample(sampleCell) {
     let matches = /(?:(\w) • )?([0-9\.]+)/g.exec(sampleCell);
-    return { 
+    return {
         sample: Number.parseFloat(matches[2].replace('.', '')),
-        pollType: matches[1] 
+        pollType: matches[1]
     };
 }
 
@@ -109,11 +109,35 @@ async function scrapeResults() {
     const polls = await Promise.all(pollsters.map(getResults));
     polls.forEach((e, i) => results[pollsters[i]] = e);
     return results;
-
 }
 
-scrapeResults().then(polls => {
-    fs.writeFileSync('polls.json', JSON.stringify(polls));
-})
+function joinResults(polls) {
+    return Object.keys(polls).flatMap(pollster => {
+        return polls[pollster].map(poll => {
+            poll.pollster = pollster;
+            return poll;
+        });
+    });
+}
+
+function sortByDate(polls) {
+    return polls.sort((p1, p2) => {
+        if (p1.date < p2.date) {
+            return -1;
+          }
+          if (p1.date > p2.date) {
+            return 1;
+          }
+        
+          return 0
+    })
+}
+
+scrapeResults()
+    .then(joinResults)
+    .then(sortByDate)
+    .then(polls => {
+        fs.writeFileSync('polls.json', JSON.stringify(polls));
+    })
 
 //getResults('yougov');
