@@ -62,7 +62,7 @@ function getHeader($) {
     const header = {}
     header.date = $('th.dat', 'table.wilko thead tr').index();
     header.sample = $('th.befr', 'table.wilko thead tr').index();
-    header.timeframe = $('th.dat2', 'table.wilko thead tr').index();
+    header.timeframe = $('th.dat2', 'table.wilko thead tr').last().index(); // because "Nichtwähler" from INSA also have dat2
 
     header.parties = [];
     $('table.wilko thead tr').children('th')
