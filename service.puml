@@ -1,0 +1,31 @@
+@startuml service
+title Service Architecture Sonntagsfrage
+
+autoactivate on
+autonumber 
+
+participant website
+database "S3 Bucket" as S3
+control "λ Scraper" as scraper
+participant "wahlrecht.de" as wahlrecht
+
+scraper -> scraper: ⏲ Schedule 1d
+scraper -> wahlrecht: Get all polls
+return
+scraper -> S3: (over)write poll data
+return
+
+scraper -> S3: (over)write model
+return
+deactivate scraper
+
+== Access ==
+[-> website
+website -> S3: Get poll and model
+return
+rnote over website #white: Render polls\nand model
+[<-- website
+
+
+
+@enduml
