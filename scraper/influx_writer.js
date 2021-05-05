@@ -22,7 +22,7 @@ async function writePolls(polls) {
     });
 
     const writeApi = new InfluxDB({ url: influxUrl, token: influxToken })
-        .getWriteApi(influxOrg, influxBucket, 's', {batchSize: 100})
+        .getWriteApi(influxOrg, influxBucket, 's', { batchSize: 100, flushInterval: 100})
     writeApi.useDefaultTags({ location: hostname() });
     writeApi.writePoints(points);
 
