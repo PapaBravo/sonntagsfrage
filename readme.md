@@ -12,11 +12,13 @@ docker run \
     --volume $PWD:/var/lib/influxdb2 \
     influxdb:2.0.6
 ```
-and set up 
+and set up `influx setup`
 * admin user (`admin:12345678`)
 * an organisation `wahlen` 
 * and a bucket `sonntagsfrage`
-* Create a token with r/w access to bucket
+* Create a token with r/w access to bucket 
+  * Find bucket id `influx bucket list`
+  * `influx auth create -o wahlen --write-bucket <bucket-id>`
 
 
 ## Scrape
