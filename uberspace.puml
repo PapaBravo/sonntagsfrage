@@ -1,0 +1,33 @@
+@startuml service
+title Service Architecture Sonntagsfrage
+
+autoactivate on
+autonumber 
+
+box "UberSpace"
+    participant website
+    participant grafana
+    database influx
+    control "λ Scraper" as scraper
+end box
+participant "wahlrecht.de" as wahlrecht
+
+scraper -> scraper: ⏲ Schedule 1d
+scraper -> wahlrecht: Get all polls
+return
+scraper -> influx: (over)write poll data
+return
+
+scraper -> influx: (over)write model
+return
+deactivate scraper
+
+== Access ==
+[-> website
+website -> grafana: Load Dashboard
+grafana -> influx: Load Data
+return
+return
+
+
+@enduml
