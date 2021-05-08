@@ -11,7 +11,7 @@ const parties = [
 ];
 
 async function getMeanData() {
-    const res = await fetch('../scraper/resampled.json');
+    const res = await fetch('../data/resampled.json');
     const raw = await res.json();
 
     let result = {

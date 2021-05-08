@@ -2,11 +2,14 @@ const fs = require('fs');
 const scraper = require('./scraper');
 const modeller = require('./modeller');
 const influxWriter = require('./influx_writer');
+const csvWriter = require('./csv_writer');
 
 scraper.scrapeSonntagsfrage()
     .then(polls => {
-        fs.writeFileSync('polls.json', JSON.stringify(polls));
-        fs.writeFileSync('resampled.json', JSON.stringify(modeller.resample(polls)));
+        fs.writeFileSync('../data/polls.json', JSON.stringify(polls));
+        fs.writeFileSync('../data/resampled.json', JSON.stringify(modeller.resample(polls)));
 
-        return influxWriter.writePolls(polls);
-    })
+        fs.writeFileSync('../data/polls.csv', csvWriter.toCsv(polls));
+
+        // return influxWriter.writePolls(polls);
+    });
