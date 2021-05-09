@@ -20,6 +20,20 @@ and set up `influx setup`
   * Find bucket id `influx bucket list`
   * `influx auth create -o wahlen --write-bucket <bucket-id>`
 
+### Setup MariaDB
+
+```sh
+docker run \
+      -p 127.0.0.1:3306:3306 \
+      --name mariadb-wahlen \
+      -e MYSQL_ROOT_PASSWORD=password \
+      -e MYSQL_DATABASE=wahlen \
+      -e MYSQL_USER=wahlen_user \
+      -e MYSQL_PASSWORD=somepassword \
+      -d mariadb:10.3
+# rerun later
+docker start mariadb-wahlen
+```
 
 ## Scrape
 To get the data, run
