@@ -47,6 +47,26 @@ function formatData(polls) {
         }));
 }
 
+async function createTable(connection) {
+    const sql = `CREATE TABLE IF NOT EXISTS sonntagsfrage (
+        poll_id INT AUTO_INCREMENT PRIMARY KEY,
+        poll_date DATE,
+        timeframe VARCHAR(255),
+        sample INT,
+        pollster VARCHAR(255) NOT NULL,
+        CDU_CSU REAL,
+        SPD REAL,
+        GRUENE REAL,
+        FDP REAL,
+        LINKE REAL,
+        PIRATEN REAL,
+        FW REAL,
+        AfD REAL,
+        Sonstige REAL
+    );`;
+    return connection.query(sql);
+}
+
 async function writeToDB(polls) {
     const values = formatData(polls);
 
@@ -58,6 +78,7 @@ async function writeToDB(polls) {
         database: dbDatabase
     });
 
+    await createTable(connection);
     await connection.query(`TRUNCATE TABLE sonntagsfrage`);
 
     const sql = `INSERT INTO sonntagsfrage (

@@ -35,6 +35,12 @@ docker run \
 docker start mariadb-wahlen
 ```
 
+## Remote Setup - Uberspace
+
+```sh
+mysql -e "CREATE DATABASE pboeck_wahlen"
+```
+
 ## Scrape
 To get the data, run
 
