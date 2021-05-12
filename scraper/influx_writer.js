@@ -8,6 +8,10 @@ const { DateTime } = require('luxon');
 async function writePolls(polls) {
     console.log(influxUrl)
 
+    const writeApi = new InfluxDB({ url: influxUrl, token: influxToken })
+        .getWriteApi(influxOrg, influxBucket, 's', { batchSize: 100, flushInterval: 100});
+    writeApi.useDefaultTags({ location: hostname() });
+
     const points = polls.map(poll => {
         let point = new Point('sonntagsfrage')
             .timestamp(DateTime.fromISO(poll.date).toJSDate())
@@ -19,12 +23,7 @@ async function writePolls(polls) {
             // .forEach(r => console.log(poll.results[r]));
             .forEach(r => point.floatField(r, poll.results[r]));
         return point;
-    });
-
-    const writeApi = new InfluxDB({ url: influxUrl, token: influxToken })
-        .getWriteApi(influxOrg, influxBucket, 's', { batchSize: 100, flushInterval: 100})
-    writeApi.useDefaultTags({ location: hostname() });
-    writeApi.writePoints(points);
+    }).forEach(point => writeApi.writePoint(point));
 
     // flushes all writes
     return writeApi.close();
