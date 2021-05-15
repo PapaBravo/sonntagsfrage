@@ -14,11 +14,11 @@ function getPollCopy(polls) {
  * 
  * @param {Poll[]} polls 
  * @param {DateTime} currentDate 
- * @param samplingRate
+ * @param windowSize
  */
-function getNeighborhood(polls, currentDate, samplingRate) {
-    const left = currentDate.minus(samplingRate);
-    const right = currentDate.plus(samplingRate);
+function getNeighborhood(polls, currentDate, windowSize) {
+    const left = currentDate.minus(windowSize);
+    const right = currentDate.plus(windowSize);
 
     const neighborhood = [];
 
@@ -56,13 +56,14 @@ function calculateSample(currentDate, neighborhood) {
 function resample(pollsInput) {
 
     const polls = getPollCopy(pollsInput);
-    const samplingRate = { weeks: 1 };
-    let startDate = polls[0].date.set({ weekday: 7 });
+    const samplingRate = { days: 1 };
+    const windowSize = { weeks: 1 };
+    let startDate = polls[0].date;
     let results = [];
     let currentDate = startDate;
 
     do {
-        const neighborhood = getNeighborhood(polls, currentDate, samplingRate);
+        const neighborhood = getNeighborhood(polls, currentDate, windowSize);
         if (neighborhood.length > 0) {
             results.push(calculateSample(currentDate, neighborhood));
         } // else skip

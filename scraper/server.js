@@ -9,7 +9,7 @@ scraper.scrapeSonntagsfrage()
     .then(polls => {
         fs.writeFileSync('../data/polls.json', JSON.stringify(polls));
         fs.writeFileSync('../data/resampled.json', JSON.stringify(modeller.resample(polls)));
-        // fs.writeFileSync('../data/polls.csv', csvWriter.toCsv(polls));
-        dbWriter.writeToDB(polls);
+        fs.writeFileSync('../data/polls.csv', csvWriter.toCsv(polls));
+        // dbWriter.writeToDB(polls);
         // return influxWriter.writePolls(polls);
     });
