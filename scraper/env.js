@@ -12,6 +12,8 @@ const dbUser = process.env['DB_USER'] || 'wahlen_user';
 const dbPassword = process.env['DB_PASSWORD'] || 'somepassword';
 const dbDatabase = process.env['DB_DATABASE'] || 'wahlen';
 
+//relative from scraper directory
+const outputPath = process.env['FILE_OUTPUT_PATH'] || '../data/';
 
 module.exports = {
     influxUrl,
@@ -23,4 +25,5 @@ module.exports = {
     dbUser,
     dbPassword,
     dbDatabase,
+    outputPath
 }

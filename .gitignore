@@ -1,2 +1,5 @@
 scraper/node_modules/
 scraper/.env
+docs/polls.csv
+docs/polls.json
+docs/resampled.json

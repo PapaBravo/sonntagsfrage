@@ -30,7 +30,7 @@ function filterAndFormat(party) {
 
 async function getMeanData() {
     if (!raw) {
-        const res = await fetch('../data/resampled.json');
+        const res = await fetch('resampled.json');
         raw = await res.json();
         raw.forEach(r => r.date = DateTime.fromISO(r.date))
     }

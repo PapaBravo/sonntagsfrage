@@ -1,0 +1,1 @@
+rsync -a docs/ /var/www/virtual/pboeck/html/sonntagsfrage/
