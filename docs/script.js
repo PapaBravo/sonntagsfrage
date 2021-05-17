@@ -15,18 +15,13 @@ const parties = [
 
 let DATE_RANGE = { start: DateTime.now().minus({ months: 3 }), end: DateTime.now() };
 let raw;
-const percentFormatter = new Intl.NumberFormat('de-DE', {style: 'percent'});
+let polls;
+
+const percentFormatter = new Intl.NumberFormat('de-DE', { style: 'percent' });
 
 function formatValue(val) {
     return percentFormatter.format(val);
 }
-
-function filterAndFormat(party) {
-    return raw
-        .filter(r => r.date >= DATE_RANGE.start && r.date <= DATE_RANGE.end)
-        .map(r => ({ x: r.date, y: r.results[party] }));
-}
-
 
 async function getMeanData() {
     if (!raw) {
@@ -35,18 +30,41 @@ async function getMeanData() {
         raw.forEach(r => r.date = DateTime.fromISO(r.date))
     }
 
-    let result = {
-        datasets: parties.map(party => {
-            return {
-                label: party.party,
-                borderColor: party.color,
-                backgroundColor: party.color,
-                borderWidth: 2,
-                pointRadius: 0,
-                data: filterAndFormat(party.party)
-            }
-        })
+    let result = parties.map(party => {
+        return {
+            label: party.party,
+            borderColor: party.color,
+            backgroundColor: party.color,
+            borderWidth: 2,
+            pointRadius: 0,
+            data: raw
+                .filter(r => r.date >= DATE_RANGE.start && r.date <= DATE_RANGE.end)
+                .map(r => ({ x: r.date, y: r.results[party.party] }))
+        }
+    });
+
+    return result;
+}
+
+async function getPollData() {
+    if (!polls) {
+        const res = await fetch('polls.json');
+        polls = await res.json();
+        polls.forEach(p => p.date = DateTime.fromISO(p.date))
     }
+
+    let result = parties.map(party => {
+        return {
+            label: party.party + ' polls',
+            borderColor: party.color,
+            backgroundColor: party.color,
+            borderWidth: 0,
+            pointRadius: 1.5,
+            data: polls
+                .filter(r => r.date >= DATE_RANGE.start && r.date <= DATE_RANGE.end)
+                .map(r => ({ x: r.date, y: r.results[party.party] }))
+        }
+    });
 
     return result;
 }
@@ -54,12 +72,13 @@ async function getMeanData() {
 function renderMean(meanData) {
     let chart = new Chart('chart-mean', {
         type: 'line',
-        data: meanData,
+        data: { datasets: meanData },
         options: {
             scales: {
                 x: {
                     type: 'time',
                     time: {
+                        unit: 'week',
                         tooltipFormat: 'DD T' // Luxon format string
                     },
                 },
@@ -72,15 +91,23 @@ function renderMean(meanData) {
             },
             interaction: {
                 intersect: false,
-                mode: 'index',
+                axis: 'x',
+                mode: 'x',
             },
+
             plugins: {
                 tooltip: {
+                    filter: item => !item.dataset.label.endsWith('polls'),
                     callbacks: {
-                        title: items => items[0].raw.x.toLocaleString({ month: 'long', day: 'numeric' }),
+                        title: items => items.length > 0 ? items[0].raw.x.toLocaleString({ month: 'long', day: 'numeric' }) : '',
                         label: item => `${item.dataset.label}: ${formatValue(item.raw.y)}`
                     }
-                }
+                },
+                legend: {
+                    labels: {
+                        filter: item => !item.text.endsWith('polls')
+                    }
+                },
             }
         }
     });
@@ -88,6 +115,8 @@ function renderMean(meanData) {
 
 async function renderDocument() {
     const meanData = await getMeanData();
+    const pollData = await getPollData();
+    meanData.push(...pollData);
     renderMean(meanData);
 }
 

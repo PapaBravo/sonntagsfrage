@@ -68,7 +68,7 @@ function resample(pollsInput) {
             results.push(calculateSample(currentDate, neighborhood));
         } // else skip
         currentDate = currentDate.plus(samplingRate);
-    } while (currentDate < polls[polls.length - 1].date);
+    } while (currentDate <= polls[polls.length - 1].date);
     return results;
 }
 
